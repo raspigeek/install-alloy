@@ -21,10 +21,8 @@
     alloy_instance_label: "{{ inventory_hostname }}"
     alloy_prometheus_remote_write_url: ""
     alloy_prometheus_username: ""
-    alloy_prometheus_password: ""
     alloy_loki_write_url: ""
     alloy_loki_username: ""
-    alloy_loki_password: ""
     alloy_scrape_targets:
       - name: fail2ban_exporter
         address: 127.0.0.1:9101
@@ -46,6 +44,24 @@
         that:
           - ansible_facts.os_family == "Debian"
         fail_msg: "install_grafana_alloy.yml currently supports Debian-family hosts only."
+
+    - name: Validate Prometheus basic auth variables are paired
+      ansible.builtin.assert:
+        that:
+          - >-
+            (alloy_prometheus_username | default('') | length == 0)
+            ==
+            (alloy_prometheus_password | default('') | length == 0)
+        fail_msg: "Set both alloy_prometheus_username and alloy_prometheus_password (via group_vars/host_vars), or leave both empty."
+
+    - name: Validate Loki basic auth variables are paired
+      ansible.builtin.assert:
+        that:
+          - >-
+            (alloy_loki_username | default('') | length == 0)
+            ==
+            (alloy_loki_password | default('') | length == 0)
+        fail_msg: "Set both alloy_loki_username and alloy_loki_password (via group_vars/host_vars), or leave both empty."
 
   tasks:
     - name: Install APT prerequisites
@@ -79,6 +95,7 @@
           - --output
           - "{{ alloy_repo_key_path }}"
           - /tmp/grafana-apt.key
+      changed_when: false
 
     - name: Add Grafana APT repository
       ansible.builtin.apt_repository:
@@ -132,6 +149,7 @@
         owner: root
         group: "{{ alloy_group }}"
         mode: "0640"
+      no_log: "{{ (alloy_prometheus_password | default('') | length > 0) or (alloy_loki_password | default('') | length > 0) }}"
       notify: Restart Grafana Alloy
 
     - name: Configure Grafana Alloy defaults

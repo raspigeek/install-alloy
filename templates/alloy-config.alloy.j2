@@ -11,7 +11,7 @@ livedebugging {
 prometheus.remote_write "metrics_backend" {
   endpoint {
     url = "{{ alloy_prometheus_remote_write_url }}"
-{% if alloy_prometheus_username or alloy_prometheus_password %}
+{% if (alloy_prometheus_username | default('')) and (alloy_prometheus_password | default('')) %}
     basic_auth {
       username = "{{ alloy_prometheus_username }}"
       password = "{{ alloy_prometheus_password }}"
@@ -49,7 +49,7 @@ prometheus.scrape "{{ scrape_target.name | replace('-', '_') | replace('.', '_')
 loki.write "logs_backend" {
   endpoint {
     url = "{{ alloy_loki_write_url }}"
-{% if alloy_loki_username or alloy_loki_password %}
+{% if (alloy_loki_username | default('')) and (alloy_loki_password | default('')) %}
     basic_auth {
       username = "{{ alloy_loki_username }}"
       password = "{{ alloy_loki_password }}"
