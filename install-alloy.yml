@@ -23,7 +23,7 @@
       service: techmaju_itom_telemetry
       team: devops
       environment: production
-      ci_ref: {{ ci_ref | default('unknown') }}
+      ci_ref: "{{ ci_ref | default('unknown') }}"
     alloy_prometheus_remote_write_url: "https://prometheus.techmaju.com/api/v1/write"
     alloy_prometheus_username: "prometheus"
     alloy_loki_write_url: "https://loki.techmaju.com/loki/api/v1/push"
