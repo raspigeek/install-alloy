@@ -149,6 +149,7 @@
         owner: root
         group: "{{ alloy_group }}"
         mode: "0640"
+        validate: "alloy fmt %s"
       no_log: "{{ (alloy_prometheus_password | default('') | length > 0) or (alloy_loki_password | default('') | length > 0) }}"
       notify: Restart Grafana Alloy
 

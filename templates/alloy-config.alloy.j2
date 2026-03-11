@@ -74,7 +74,7 @@ local.file_match "host_logs" {
 loki.process "host_logs" {
   stage.static_labels {
     values = {
-      host = "{{ alloy_instance_label }}"
+      host = "{{ alloy_instance_label }}",
     }
   }
   forward_to = [loki.write.logs_backend.receiver]
