@@ -22,9 +22,25 @@ prometheus.remote_write "metrics_backend" {
 
 prometheus.exporter.unix "integrations_node_exporter" {}
 
+{% if (alloy_node_exporter_labels | default({})) | length > 0 %}
+prometheus.relabel "integrations_node_exporter" {
+  forward_to = [prometheus.remote_write.metrics_backend.receiver]
+{% for label_key, label_value in alloy_node_exporter_labels.items() %}
+  rule {
+    target_label = "{{ label_key }}"
+    replacement  = "{{ label_value }}"
+  }
+{% endfor %}
+}
+
+{% endif %}
 prometheus.scrape "integrations_node_exporter" {
   targets         = prometheus.exporter.unix.integrations_node_exporter.targets
+{% if (alloy_node_exporter_labels | default({})) | length > 0 %}
+  forward_to      = [prometheus.relabel.integrations_node_exporter.receiver]
+{% else %}
   forward_to      = [prometheus.remote_write.metrics_backend.receiver]
+{% endif %}
   job_name        = "integrations/node_exporter"
   scrape_interval = "{{ alloy_scrape_interval }}"
 }

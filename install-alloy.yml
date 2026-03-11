@@ -19,6 +19,10 @@
     alloy_log_format: logfmt
     alloy_scrape_interval: 30s
     alloy_instance_label: "{{ inventory_hostname }}"
+    alloy_node_exporter_labels: 
+      service: techmaju_itom_telemetry
+      team: devops
+      environment: production
     alloy_prometheus_remote_write_url: "https://prometheus.techmaju.com/api/v1/write"
     alloy_prometheus_username: "prometheus"
     alloy_loki_write_url: "https://loki.techmaju.com/loki/api/v1/push"
